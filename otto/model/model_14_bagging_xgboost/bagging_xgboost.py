@@ -91,8 +91,8 @@ if __name__ == '__main__':
     clf = ensemble.BaggingClassifier(base_estimator=clf_xgb, n_estimators=20,
                                      max_samples=1., max_features=1., bootstrap=True,
                                      n_jobs=1, verbose=True, random_state=23)
-    # max_sample,max_feature对应bootstrap,bootstrap_feature.如果为真就是不放回的，这里的意思就是不重复的抽取所有样本，放回的抽取feature数目的特征。
-
+    # max_sample,max_feature对应bootstrap,bootstrap_feature.如果为真就是放回的抽样
+    
     if MODE == 'cv':
         scores, predictions = utils.make_blender_cv(clf, train, labels, calibrate=False)
         print 'CV:', scores, 'Mean log loss:', np.mean(scores)
