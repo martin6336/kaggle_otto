@@ -21,7 +21,7 @@ if __name__ == '__main__':
         # Copy header
         writer.writerow(readers[0].next())
         for r in readers[1:]:
-            r.next()  # 就是整个文件数据，为什么要用暂时不知道
+            r.next()  # 就是整个文件数据，为什么要用next（）暂时不知道
         # Merge content
         for line in readers[0]:
             file_name = line[0]
