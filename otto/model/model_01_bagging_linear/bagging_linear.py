@@ -15,7 +15,7 @@ MODEL_NAME = 'model_01_bagging_linear'
 MODE = 'holdout'  # cv|submission|holdout
 
 # import data
-train, labels, test, _, _ = utils.load_data()
+train, labels, test, _, _ = utils.load_data()  # 这里的_可能是取消这个变量
 
 # polynomial features
 poly_feat = preprocessing.PolynomialFeatures(degree=2, interaction_only=False, include_bias=True)
@@ -42,11 +42,13 @@ labels = lbl_enc.fit_transform(labels)
 
 # train classifier
 linear_clf = linear_model.LogisticRegression(C=1, penalty='l1',
-                                             fit_intercept=True, random_state=23)
+                                             fit_intercept=True, random_state=23)  
+# C:Inverse of regularization strength; must be a positive float
 
 clf = ensemble.BaggingClassifier(base_estimator=linear_clf, n_estimators=40,
                                  max_samples=1., max_features=1., bootstrap=True,
-                                 n_jobs=5, verbose=True, random_state=23)
+                                 n_jobs=5, verbose=True, random_state=23) 
+# bootstrap表示不放回的抽样，max_feature:If float, then draw max_samples * X.shape[0] samples.
 
 if MODE == 'cv':
     scores, predictions = utils.make_blender_cv(clf, train, labels)
