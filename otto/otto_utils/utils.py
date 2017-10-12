@@ -29,6 +29,7 @@ def load_data(path_train=consts.DATA_TRAIN_PATH, path_test=consts.DATA_TEST_PATH
         np.array(train_ids), np.array(test_ids)
 
 
+# calibration为备选项的stacking但是他只把train中的数据给处理了，test集中的木有。
 def make_blender_cv(classifier, x, y, calibrate=False):
     skf = StratifiedKFold(y, n_folds=5, random_state=23)
     scores, predictions = [], None
@@ -62,17 +63,17 @@ def save_submission(path_sample_submission, output_file_path, predictions):
 
 
 def stratified_split(x, y, test_size=0.2):
-    strat_shuffled_split = StratifiedShuffleSplit(y, n_iter=1, test_size=test_size, random_state=23)
-    train_index, valid_index = [s for s in strat_shuffled_split][0]
-
+    strat_shuffled_split = StratifiedShuffleSplit(y, n_iter=1, test_size=test_size, random_state=23)  # 按比例并且每次取完的sample可能是相同的
+    train_index, valid_index = [s for s in strat_shuffled_split][0]  
+# 只选第一个也就是用blender思想，他这应该是想分离出一部分这样可以本地评分
+# shuffle_split不会按照比例，想按照比例就用它然后只取一个不就得了
     x_train, y_train, x_valid, y_valid = x[train_index, :], y[train_index], x[valid_index, :], y[valid_index]
-
     return x_train, y_train, x_valid, y_valid
 
 
+# 本地评分
 def hold_out_evaluation(classifier, x, y, test_size=0.2, calibrate=False):
     x_train, y_train, x_valid, y_valid = stratified_split(x, y, test_size)
-
     # Train
     if calibrate:
         # Make training and calibration
@@ -82,11 +83,10 @@ def hold_out_evaluation(classifier, x, y, test_size=0.2, calibrate=False):
         fitted_classifier = classifier.fit(x_train, y_train)
     # Evaluate
     score = log_loss(y_valid, fitted_classifier.predict_proba(x_valid))
-
     return score
 
 
-def get_prediction_files():
+def get_prediction_files():  # 各种模型名称
     return ['model_%s.csv' % f for f in consts.PREDICTION_FILES]
 
 
