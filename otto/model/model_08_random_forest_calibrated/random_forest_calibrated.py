@@ -34,7 +34,9 @@ if MODE == 'cv':
     print 'CV:', scores, 'Mean log loss:', np.mean(scores)
     utils.write_blender_data(consts.BLEND_PATH, MODEL_NAME + '.csv', predictions)
 elif MODE == 'submission':
-    calibrated_classifier = CalibratedClassifierCV(clf, method='isotonic', cv=utils.get_cv(labels))
+    calibrated_classifier = CalibratedClassifierCV(clf, method='isotonic', cv=utils.get_cv(labels))  
+    # 为了防止过拟合使用cv，但是这里的clf可能只能用sklearn里面的
+    
     fitted_classifier = calibrated_classifier.fit(train, labels)
     predictions = fitted_classifier.predict_proba(test)
     utils.save_submission(consts.DATA_SAMPLE_SUBMISSION_PATH,
